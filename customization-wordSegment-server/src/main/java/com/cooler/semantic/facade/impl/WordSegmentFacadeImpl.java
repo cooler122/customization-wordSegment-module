@@ -1,18 +1,35 @@
 package com.cooler.semantic.facade.impl;
 
+import com.cooler.semantic.entity.CustomizedWord;
+import com.cooler.semantic.entity.WordRestriction;
 import com.cooler.semantic.facade.WordSegmentFacade;
 import com.cooler.semantic.model.SentenceVector;
+import com.cooler.semantic.service.CustomizedWordService;
+import com.cooler.semantic.service.WordRestrictionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-public class WordSegmentFacadeImpl implements WordSegmentFacade
-{
-    public List<SentenceVector> wordSegregate(String sentence, Integer accountId, List<Integer> domainIds, List<Integer> selectorIds, boolean isDropPunctuation) {
-        return null;
-    }
+@Component("wordSegmentFacade")
+public class WordSegmentFacadeImpl implements WordSegmentFacade{
+    private Logger logger = LoggerFactory.getLogger(WordSegmentFacadeImpl.class.getName());
 
-    public static void main(String[] args )
-    {
-        System.out.println( "Hello World!" );
+    @Autowired
+    private CustomizedWordService customizedWordService;
+
+    @Autowired
+    private WordRestrictionService wordRestrictionService;
+
+    public List<SentenceVector> wordSegment(String sentence, Integer accountId, List<Integer> domainIds, List<Integer> selectorIds, boolean isDropPunctuation) {
+        logger.info("分词模块");
+        System.out.println("分词....");
+
+        System.out.println(customizedWordService != null);
+        System.out.println(wordRestrictionService != null);
+
+        return null;
     }
 }

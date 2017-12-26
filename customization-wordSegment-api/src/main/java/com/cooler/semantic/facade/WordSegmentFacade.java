@@ -19,7 +19,9 @@ public interface WordSegmentFacade
      * @param isDropPunctuation   是否需要去掉符号
      * @return  多个 分好词的词段集合
      */
-    List<SentenceVector> wordSegregate(String sentence, Integer accountId, List<Integer> domainIds, List<Integer> selectorIds, boolean isDropPunctuation);
+    List<SentenceVector> wordSegment(String sentence, Integer accountId, List<Integer> domainIds, List<Integer> selectorIds, boolean isDropPunctuation);
+
+
 
 
 }
