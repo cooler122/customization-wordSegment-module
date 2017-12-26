@@ -1,7 +1,5 @@
 package com.cooler.semantic.facade.impl;
 
-import com.cooler.semantic.entity.CustomizedWord;
-import com.cooler.semantic.entity.WordRestriction;
 import com.cooler.semantic.facade.WordSegmentFacade;
 import com.cooler.semantic.model.SentenceVector;
 import com.cooler.semantic.service.CustomizedWordService;
