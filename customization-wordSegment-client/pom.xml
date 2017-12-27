@@ -18,6 +18,7 @@
         <project.spring.version>4.2.9.RELEASE</project.spring.version>
     </properties>
 
+    <!-- 有时候要让项目自己运行一个类来编译，使用maven有时候不能讲resources里面的东西编译到target里面 -->
 
     <dependencies>
         <!-- 本服务api -->
