@@ -9,6 +9,9 @@
     <dubbo:registry address="zookeeper://127.0.0.1:2181" check="false"></dubbo:registry>
     <!--<dubbo:registry address="zookeeper://192.168.10.20:2181?backup=192.168.10.21:2181,192.168.10.22:2181" check="false"></dubbo:registry>-->
     <!-- 要引用的服务 -->
-    <dubbo:reference interface="com.cooler.semantic.facade.WordSegmentFacade" id="wordSegmentFacade" version="1.0-SNAPSHOT"  />
+    <dubbo:reference interface="com.cooler.semantic.facade.WordSegmentFacade" id="wordSegmentFacade" version="1.0-SNAPSHOT"  timeout="2000" />
+
+    <dubbo:reference interface="com.cooler.semantic.facade.SemanticFacade" id="semanticFacade" version="1.0-SNAPSHOT"  timeout="2000" />
+    <dubbo:reference interface="com.cooler.semantic.facade.DynamicConfigFacade" id="dynamicConfigFacade" version="1.0-SNAPSHOT" timeout="2000" />
 
 </beans>
