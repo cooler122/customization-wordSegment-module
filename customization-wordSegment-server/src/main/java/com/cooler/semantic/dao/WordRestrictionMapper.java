@@ -1,6 +1,9 @@
 package com.cooler.semantic.dao;
 
 import com.cooler.semantic.entity.WordRestriction;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface WordRestrictionMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,6 @@ public interface WordRestrictionMapper {
     int updateByPrimaryKeySelective(WordRestriction record);
 
     int updateByPrimaryKey(WordRestriction record);
+
+    List<WordRestriction> selectByWordIds(@Param("wordIds") List<Integer> hitCustomizedWordIds, @Param("accountId") Integer accountId);
 }

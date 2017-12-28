@@ -1,4 +1,4 @@
-package com.cooler.semantic.util;
+package com.cooler.semantic.enumeration;
 
 import com.hankcs.hanlp.HanLP;
 import com.hankcs.hanlp.collection.trie.bintrie.BinTrie;

@@ -5,7 +5,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import java.io.Serializable;
 import java.util.List;
 
-public class BasisSemantic implements Serializable {
+public class SemanticInfo implements Serializable {
     @JSONField(
         name = "term_ls"
     )
@@ -15,14 +15,14 @@ public class BasisSemantic implements Serializable {
     )
     private List<NamedEntityRecognition> namedEntityRecognitionList;
 
-    public BasisSemantic() {
+    public SemanticInfo() {
     }
 
     public List<Term> getTermList() {
         return this.termList;
     }
 
-    public BasisSemantic setTermList(List<Term> termList) {
+    public SemanticInfo setTermList(List<Term> termList) {
         this.termList = termList;
         return this;
     }
@@ -31,7 +31,7 @@ public class BasisSemantic implements Serializable {
         return this.namedEntityRecognitionList;
     }
 
-    public BasisSemantic setNamedEntityRecognitionList(List<NamedEntityRecognition> namedEntityRecognitionList) {
+    public SemanticInfo setNamedEntityRecognitionList(List<NamedEntityRecognition> namedEntityRecognitionList) {
         this.namedEntityRecognitionList = namedEntityRecognitionList;
         return this;
     }

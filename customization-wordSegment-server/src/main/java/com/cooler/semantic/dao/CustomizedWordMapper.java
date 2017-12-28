@@ -1,6 +1,9 @@
 package com.cooler.semantic.dao;
 
 import com.cooler.semantic.entity.CustomizedWord;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface CustomizedWordMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,6 @@ public interface CustomizedWordMapper {
     int updateByPrimaryKeySelective(CustomizedWord record);
 
     int updateByPrimaryKey(CustomizedWord record);
+
+    List<CustomizedWord> selectByAccountId(@Param("accountId") Integer accountId);
 }

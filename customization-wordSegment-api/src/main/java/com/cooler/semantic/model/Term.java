@@ -5,18 +5,19 @@ import com.alibaba.fastjson.annotation.JSONField;
 import java.io.Serializable;
 
 public class Term implements Serializable {
+
     @JSONField(
         name = "idx"
     )
-    private int index;
+    private int index;                  //序列号
     @JSONField(
         name = "w"
     )
-    private String word;
+    private String word;                //分词段
     @JSONField(
         name = "pos"
     )
-    private String partOfSpeech;
+    private String partOfSpeech;        //词性
     @JSONField(
         name = "ne"
     )
@@ -32,7 +33,7 @@ public class Term implements Serializable {
     @JSONField(
         name = "wt"
     )
-    private double weight;
+    private double weight;             //权重
     @JSONField(
         name = "sem_p"
     )

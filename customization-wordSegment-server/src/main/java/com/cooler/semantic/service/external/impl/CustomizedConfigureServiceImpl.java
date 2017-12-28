@@ -1,5 +1,6 @@
-package com.cooler.semantic.util;
+package com.cooler.semantic.service.external.impl;
 
+import com.cooler.semantic.service.external.CustomizedConfigureService;
 import com.hankcs.hanlp.HanLP;
 import com.hankcs.hanlp.collection.trie.bintrie.BinTrie;
 import com.hankcs.hanlp.corpus.tag.Nature;
@@ -8,14 +9,26 @@ import com.hankcs.hanlp.dictionary.CustomDictionary;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
 
 @Slf4j
-public class DynamicConfiger {
+@Component("customizedConfigureService")
+public class CustomizedConfigureServiceImpl implements CustomizedConfigureService{
 
-    public static boolean deleteDynamicTrie(String name) {
+    @Synchronized
+    public boolean saveCustomizedDict(String name) {
+        return CustomDictionary.saveDynamicDict(name);
+    }
+
+    @Synchronized
+    public boolean loadCustomizedDict(String name) {
+        return CustomDictionary.loadDynamicDict(name);
+    }
+
+    public boolean deleteCustomizedTrie(String name) {
         if (StringUtils.isBlank(name)) return false;
         CustomDictionary.mTrie.remove(name);
 
@@ -26,50 +39,53 @@ public class DynamicConfiger {
         return true;
     }
 
-    public static boolean addDynamicWord(String name, String term) {
+
+
+
+    public boolean addCustomizedWord(String name, String term) {
         if (!StringUtils.isNoneBlank(name, term)) return false;
 
         BinTrie trie = getBinTrieByName(name, true);
         boolean ret;
         if ((ret = addTerm2BinTrie(trie, term))) {
-            saveDynamicDict(name);
+            saveCustomizedDict(name);
         }
         return ret;
     }
 
-    public static boolean deleteDynamicWord(String name, String word) {
-        if (!StringUtils.isNoneBlank(name, word)) return false;
-        BinTrie trie = CustomDictionary.mTrie.get(name);
-        boolean ret;
-        if ((ret = delWordInBinTrie(trie, word))) {
-            saveDynamicDict(name);
-        }
-        return ret;
-    }
-
-    public static boolean addDynamicWords(String name, List<String> terms) {
+    public boolean addCustomizedWords(String name, List<String> terms) {
         if (StringUtils.isBlank(name) || terms == null) return false;
 
         BinTrie trie = getBinTrieByName(name, true);
         for (String term : terms) {
             addTerm2BinTrie(trie, term);
         }
-        saveDynamicDict(name);
+        saveCustomizedDict(name);
         return true;
     }
 
-    public static boolean deleteDynamicWords(String name, List<String> words) {
+    public boolean deleteCustomizedWord(String name, String word) {
+        if (!StringUtils.isNoneBlank(name, word)) return false;
+        BinTrie trie = CustomDictionary.mTrie.get(name);
+        boolean ret;
+        if ((ret = delWordInBinTrie(trie, word))) {
+            saveCustomizedDict(name);
+        }
+        return ret;
+    }
+
+    public boolean deleteCustomizedWords(String name, List<String> words) {
         if (StringUtils.isBlank(name) || words == null) return false;
         BinTrie trie = getBinTrieByName(name, false);
         boolean ret = false;
         for (String word : words) {
             if (delWordInBinTrie(trie, word)) ret = true;
         }
-        if (ret) saveDynamicDict(name);
+        if (ret) saveCustomizedDict(name);
         return ret;
     }
 
-    public static boolean alterDynamicWord(String name, String term) {
+    public boolean alterCustomizedWord(String name, String term) {
         if (!StringUtils.isNoneBlank(name, term)) return false;
         BinTrie trie = getBinTrieByName(name, false);
         if (trie == null) return false;
@@ -80,25 +96,17 @@ public class DynamicConfiger {
         } else {
             return false;
         }
-        saveDynamicDict(name);
+        saveCustomizedDict(name);
         return true;
     }
 
-    public static boolean containDynamicWord(String name, String word) {
+    public boolean containCustomizedWord(String name, String word) {
         if (!StringUtils.isNoneBlank(name, word)) return false;
         BinTrie trie = getBinTrieByName(name, false);
         return trie != null && trie.containsKey(word);
     }
 
-    @Synchronized
-    public static boolean saveDynamicDict(String name) {
-        return CustomDictionary.saveDynamicDict(name);
-    }
 
-    @Synchronized
-    public static boolean loadDynamicDict(String name) {
-        return CustomDictionary.loadDynamicDict(name);
-    }
 
     /**
      * 获取bintrie.

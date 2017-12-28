@@ -1,8 +1,8 @@
 package com.cooler.semantic.model;
 
 import com.hankcs.hanlp.dictionary.CustomDictionary;
-import com.cooler.semantic.util.Channel;
-import com.cooler.semantic.util.SemanticUtil;
+import com.cooler.semantic.enumeration.Channel;
+import com.cooler.semantic.enumeration.SemanticUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
@@ -108,7 +108,6 @@ public class SemanticCache {
 
     private static boolean cacheEnabled(String text, Channel channel, String name) {
         // sys channel，和非动态分词的CUSTOM channel，支持缓存
-        return channel.equals(Channel.SYS)
-                || StringUtils.isNoneBlank(name) && CustomDictionary.getCustomDictionaryInt(name) > -1;
+        return channel.equals(Channel.SYS) || StringUtils.isNoneBlank(name) && CustomDictionary.getCustomDictionaryInt(name) > -1;
     }
 }

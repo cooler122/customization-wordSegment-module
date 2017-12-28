@@ -1,7 +1,10 @@
 package com.cooler.semantic.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SentenceVector implements Serializable, Cloneable {
     /**
@@ -12,27 +15,47 @@ public class SentenceVector implements Serializable, Cloneable {
     /**
      * 分好词的字符串数组
      */
-    private List<String> words;
+    private List<String> words = new ArrayList<>();
 
     /**
      * 每一个词语在数据库中对应的wordId
      */
-    private List<Integer> wordIds;
+    private List<Integer> wordIds = new ArrayList<>();
 
     /**
      * 分好词的词性数组
      */
-    private List<String> natures;
+    private List<String> natures = new ArrayList<>();
 
     /**
      * 实体类型集合（0为词语实体、1为字符串实体、2为正则实体、3为code实体）,默认全是0
      */
-    private List<Integer> entityTypes;
+    private List<Integer> entityTypes = new ArrayList<>();
+
+    /**
+     * 此词语集合归属的实体ID集合
+     */
+    private List<Integer> entityIds = new ArrayList<>();
+
+    /**
+     * 此词语集合归属的实体名称集合
+     */
+    private List<String> entityNames = new ArrayList<>();
 
     /**
      * 设好权重的权重数值数组
      */
-    private List<Double> weights;
+    private List<Double> weights = new ArrayList<>();
+
+//    /**
+//     * 实体归属Map(这个非常重要）
+//     */
+//    private Map<Integer, List<Entity>> attachedEntitysMap = new HashMap<>();
+
+    /**
+     * 自定义分词的约束Map（Map<wordId, List<WordRestrictionParam>>）
+     */
+    private  Map<Integer, List<WordRestrictionParam>> wordRestrictionParamMap = new HashMap<>();
 
 //    /**
 //     * 综合词段信息
@@ -90,11 +113,35 @@ public class SentenceVector implements Serializable, Cloneable {
         this.entityTypes = entityTypes;
     }
 
+    public List<Integer> getEntityIds() {
+        return entityIds;
+    }
+
+    public void setEntityIds(List<Integer> entityIds) {
+        this.entityIds = entityIds;
+    }
+
+    public List<String> getEntityNames() {
+        return entityNames;
+    }
+
+    public void setEntityNames(List<String> entityNames) {
+        this.entityNames = entityNames;
+    }
+
     public List<Double> getWeights() {
         return weights;
     }
 
     public void setWeights(List<Double> weights) {
         this.weights = weights;
+    }
+
+    public Map<Integer, List<WordRestrictionParam>> getWordRestrictionParamMap() {
+        return wordRestrictionParamMap;
+    }
+
+    public void setWordRestrictionParamMap(Map<Integer, List<WordRestrictionParam>> wordRestrictionParamMap) {
+        this.wordRestrictionParamMap = wordRestrictionParamMap;
     }
 }

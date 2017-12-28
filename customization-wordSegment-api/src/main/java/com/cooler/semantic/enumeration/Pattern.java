@@ -1,4 +1,4 @@
-package com.cooler.semantic.util;
+package com.cooler.semantic.enumeration;
 
 /**
  * 基础语义支持的解析模块

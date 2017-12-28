@@ -1,11 +1,12 @@
-package com.cooler.semantic.entity;
+package com.cooler.semantic.model;
 
-import java.util.Date;
+import java.io.Serializable;
 
-public class WordRestriction {
-    private Integer id;
+public class WordRestrictionParam implements Serializable{
 
     private Integer wordId;
+
+    private String word;
 
     private Integer sceneId;
 
@@ -25,44 +26,20 @@ public class WordRestriction {
 
     private Integer accountId;
 
-    private Integer state;
-
-    private Date createTime;
-
-    public WordRestriction(Integer id, Integer wordId, Integer sceneId, String sceneName, Integer intentId, String intentName, Integer ruleId, String ruleName, Integer entityId, String entityName, Integer accountId, Integer state, Date createTime) {
-        this.id = id;
-        this.wordId = wordId;
-        this.sceneId = sceneId;
-        this.sceneName = sceneName;
-        this.intentId = intentId;
-        this.intentName = intentName;
-        this.ruleId = ruleId;
-        this.ruleName = ruleName;
-        this.entityId = entityId;
-        this.entityName = entityName;
-        this.accountId = accountId;
-        this.state = state;
-        this.createTime = createTime;
-    }
-
-    public WordRestriction() {
-        super();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Integer getWordId() {
         return wordId;
     }
 
     public void setWordId(Integer wordId) {
         this.wordId = wordId;
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public void setWord(String word) {
+        this.word = word;
     }
 
     public Integer getSceneId() {
@@ -78,7 +55,7 @@ public class WordRestriction {
     }
 
     public void setSceneName(String sceneName) {
-        this.sceneName = sceneName == null ? null : sceneName.trim();
+        this.sceneName = sceneName;
     }
 
     public Integer getIntentId() {
@@ -94,7 +71,7 @@ public class WordRestriction {
     }
 
     public void setIntentName(String intentName) {
-        this.intentName = intentName == null ? null : intentName.trim();
+        this.intentName = intentName;
     }
 
     public Integer getRuleId() {
@@ -110,7 +87,7 @@ public class WordRestriction {
     }
 
     public void setRuleName(String ruleName) {
-        this.ruleName = ruleName == null ? null : ruleName.trim();
+        this.ruleName = ruleName;
     }
 
     public Integer getEntityId() {
@@ -126,7 +103,7 @@ public class WordRestriction {
     }
 
     public void setEntityName(String entityName) {
-        this.entityName = entityName == null ? null : entityName.trim();
+        this.entityName = entityName;
     }
 
     public Integer getAccountId() {
@@ -135,21 +112,5 @@ public class WordRestriction {
 
     public void setAccountId(Integer accountId) {
         this.accountId = accountId;
-    }
-
-    public Integer getState() {
-        return state;
-    }
-
-    public void setState(Integer state) {
-        this.state = state;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
     }
 }

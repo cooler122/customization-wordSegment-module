@@ -1,4 +1,4 @@
-package com.cooler.semantic.util;
+package com.cooler.semantic.enumeration;
 
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,4 +1,4 @@
-package com.cooler.semantic.util;
+package com.cooler.semantic.enumeration;
 
 import com.hankcs.hanlp.corpus.tag.Nature;
 import com.hankcs.hanlp.recognition.ns.PlaceRecognition;

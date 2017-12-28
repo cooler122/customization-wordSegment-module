@@ -1,4 +1,4 @@
-package com.cooler.semantic.util;
+package com.cooler.semantic.enumeration;
 
 import edu.fudan.nlp.Fudan;
 import edu.fudan.nlp.parser.dep.DependencyTree;

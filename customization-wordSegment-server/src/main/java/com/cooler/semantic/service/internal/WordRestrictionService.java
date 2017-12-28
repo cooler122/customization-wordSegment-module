@@ -1,6 +1,9 @@
-package com.cooler.semantic.service;
+package com.cooler.semantic.service.internal;
 
 import com.cooler.semantic.entity.WordRestriction;
+import com.cooler.semantic.model.WordRestrictionParam;
+
+import java.util.List;
 
 public interface WordRestrictionService {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,6 @@ public interface WordRestrictionService {
     int updateByPrimaryKeySelective(WordRestriction record);
 
     int updateByPrimaryKey(WordRestriction record);
+
+    List<WordRestrictionParam> selectByWordIds(List<Integer> hitCustomizedWordIds, Integer accountId);
 }

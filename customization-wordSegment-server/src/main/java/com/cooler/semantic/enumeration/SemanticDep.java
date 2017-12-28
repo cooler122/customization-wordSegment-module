@@ -1,4 +1,4 @@
-package com.cooler.semantic.util;
+package com.cooler.semantic.enumeration;
 
 import edu.stanford.nlp.StanfordParser;
 import edu.stanford.nlp.ling.CoreAnnotations;

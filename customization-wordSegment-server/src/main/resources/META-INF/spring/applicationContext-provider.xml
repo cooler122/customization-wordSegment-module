@@ -21,7 +21,8 @@
     <dubbo:registry address="${zookeeper.register.address}"/>
     <!--<dubbo:registry address="zookeeper://192.168.10.20:2181?backup=192.168.10.21:2181,192.168.10.22:2181"/>-->
 
-    <dubbo:service interface="com.cooler.semantic.facade.WordSegmentFacade" ref="wordSegmentFacade"
+
+    <dubbo:service interface="com.cooler.semantic.facade.CustomizedSemanticFacade" ref="customizedSemanticFacade"
                    protocol="dubbo"
                    version="1.0-SNAPSHOT"
                    timeout="200000"
@@ -31,17 +32,7 @@
                    loadbalance="random"
                    cluster="failover"/>
 
-    <dubbo:service interface="com.cooler.semantic.facade.SemanticFacade" ref="semanticFacade"
-                   protocol="dubbo"
-                   version="1.0-SNAPSHOT"
-                   timeout="200000"
-                   retries="0"
-                   connections="1"
-                   executes="300"
-                   loadbalance="random"
-                   cluster="failover"/>
-
-    <dubbo:service interface="com.cooler.semantic.facade.DynamicConfigFacade" ref="dynamicConfigFacade"
+    <dubbo:service interface="com.cooler.semantic.facade.CustomizedConfigureFacade" ref="customizedConfigureFacade"
                    protocol="dubbo"
                    version="1.0-SNAPSHOT"
                    timeout="200000"

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.cooler.semantic.dao.WordRestrictionMapper" >
-
   <resultMap id="BaseResultMap" type="com.cooler.semantic.entity.WordRestriction" >
     <constructor >
       <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
@@ -12,39 +11,39 @@
       <arg column="intent_name" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="rule_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="rule_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="entity_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="entity_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="account_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="state" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="create_time" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
     </constructor>
   </resultMap>
-
   <sql id="Base_Column_List" >
-    id, word_id, scene_id, scene_name, intent_id, intent_name, rule_id, rule_name, state, 
-    create_time
+    id, word_id, scene_id, scene_name, intent_id, intent_name, rule_id, rule_name, entity_id, 
+    entity_name, account_id, state, create_time
   </sql>
-
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from word_restriction
     where id = #{id,jdbcType=INTEGER}
   </select>
-
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from word_restriction
     where id = #{id,jdbcType=INTEGER}
   </delete>
-
   <insert id="insert" parameterType="com.cooler.semantic.entity.WordRestriction" >
     insert into word_restriction (id, word_id, scene_id, 
       scene_name, intent_id, intent_name, 
-      rule_id, rule_name, state, 
+      rule_id, rule_name, entity_id, 
+      entity_name, account_id, state, 
       create_time)
     values (#{id,jdbcType=INTEGER}, #{wordId,jdbcType=INTEGER}, #{sceneId,jdbcType=INTEGER}, 
       #{sceneName,jdbcType=VARCHAR}, #{intentId,jdbcType=INTEGER}, #{intentName,jdbcType=VARCHAR}, 
-      #{ruleId,jdbcType=INTEGER}, #{ruleName,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=VARCHAR})
+      #{ruleId,jdbcType=INTEGER}, #{ruleName,jdbcType=VARCHAR}, #{entityId,jdbcType=INTEGER}, 
+      #{entityName,jdbcType=VARCHAR}, #{accountId,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP})
   </insert>
-
   <insert id="insertSelective" parameterType="com.cooler.semantic.entity.WordRestriction" >
     insert into word_restriction
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -71,6 +70,15 @@
       </if>
       <if test="ruleName != null" >
         rule_name,
+      </if>
+      <if test="entityId != null" >
+        entity_id,
+      </if>
+      <if test="entityName != null" >
+        entity_name,
+      </if>
+      <if test="accountId != null" >
+        account_id,
       </if>
       <if test="state != null" >
         state,
@@ -104,15 +112,23 @@
       <if test="ruleName != null" >
         #{ruleName,jdbcType=VARCHAR},
       </if>
+      <if test="entityId != null" >
+        #{entityId,jdbcType=INTEGER},
+      </if>
+      <if test="entityName != null" >
+        #{entityName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountId != null" >
+        #{accountId,jdbcType=INTEGER},
+      </if>
       <if test="state != null" >
         #{state,jdbcType=INTEGER},
       </if>
       <if test="createTime != null" >
-        #{createTime,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-
   <update id="updateByPrimaryKeySelective" parameterType="com.cooler.semantic.entity.WordRestriction" >
     update word_restriction
     <set >
@@ -137,16 +153,24 @@
       <if test="ruleName != null" >
         rule_name = #{ruleName,jdbcType=VARCHAR},
       </if>
+      <if test="entityId != null" >
+        entity_id = #{entityId,jdbcType=INTEGER},
+      </if>
+      <if test="entityName != null" >
+        entity_name = #{entityName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountId != null" >
+        account_id = #{accountId,jdbcType=INTEGER},
+      </if>
       <if test="state != null" >
         state = #{state,jdbcType=INTEGER},
       </if>
       <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-
   <update id="updateByPrimaryKey" parameterType="com.cooler.semantic.entity.WordRestriction" >
     update word_restriction
     set word_id = #{wordId,jdbcType=INTEGER},
@@ -156,9 +180,22 @@
       intent_name = #{intentName,jdbcType=VARCHAR},
       rule_id = #{ruleId,jdbcType=INTEGER},
       rule_name = #{ruleName,jdbcType=VARCHAR},
+      entity_id = #{entityId,jdbcType=INTEGER},
+      entity_name = #{entityName,jdbcType=VARCHAR},
+      account_id = #{accountId,jdbcType=INTEGER},
       state = #{state,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=VARCHAR}
+      create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
+  <!-- 业务相关 -->
+  <select id="selectByWordIds" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from word_restriction
+    where state = 1 and account_id = #{accountId, jdbcType=INTEGER} id IN
+      <foreach collection="wordIds" item="wordId" open="(" separator="," close=")">
+        #{wordId,jdbcType=INTEGER}
+      </foreach>
+  </select>
 </mapper>

@@ -1,6 +1,5 @@
 package com.cooler.semantic.client;
 
-import com.cooler.semantic.facade.WordSegmentFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
