@@ -95,7 +95,7 @@ public class CustomizedSemanticFacadeImp implements CustomizedSemanticFacade {
             String word = term.getWord();
             Double weight = term.getWeight();
             String partOfSpeech = term.getPartOfSpeech();
-            if(isDropPunctuation && partOfSpeech.equals("w")) continue;                                               //如果需要丢弃标点，那么这个标点分段就不加入到句子向量中
+            if(isDropPunctuation && partOfSpeech.equals("w")) continue;                                                 //如果需要丢弃标点，那么这个标点分段就不加入到句子向量中
             words.add(word);                                                                                            //添加word字符串
             natures.add(partOfSpeech);                                                                                  //添加词性
             weights.add(weight);                                                                                        //添加词的权重
@@ -115,12 +115,12 @@ public class CustomizedSemanticFacadeImp implements CustomizedSemanticFacade {
             List<Term> terms = semantic.getTermList();                                                                  //分词结果中取出分词段
 
             Map<String, CustomizedWord> customizedWordMap = new HashMap<>();                                            //本次将要用到的自定义分词Map
-            if(terms != null && terms.size() > 0){                                                                     //一般此处不用校验，如果没有词段，说明分词接口断了
+            if(terms != null && terms.size() > 0){                                                                      //一般此处不用校验，如果没有词段，说明分词接口断了
                 //2.查出此用户建立的所有的自定义分词（从全局Map或DB里面查）
                 Map<String, CustomizedWord> customizedWordMapTemp = globalCustomizedWordMap.get(accountId);             //先尝试从全局缓存中取出这个accountId下的自定义分词Map
-                if(customizedWordMapTemp != null && customizedWordMapTemp.size() > 0) {                                //如果成功取出，则将此分词Map赋予customizedWordMap
+                if(customizedWordMapTemp != null && customizedWordMapTemp.size() > 0) {                                 //如果成功取出，则将此分词Map赋予customizedWordMap
                     customizedWordMap = customizedWordMapTemp;
-                }else{                                                                                                 //如果没有取出，则查数据库
+                }else{                                                                                                  //如果没有取出，则查数据库
                     List<CustomizedWord> customizedWords = customizedWordService.selectByAccountId(accountId);
                     if(customizedWords != null && customizedWords.size() > 0){
                         for (CustomizedWord customizedWord : customizedWords) {
@@ -136,7 +136,7 @@ public class CustomizedSemanticFacadeImp implements CustomizedSemanticFacade {
                 List<String> words = sentenceVectorParam.getWords();
                 List<String> natures = sentenceVectorParam.getNatures();
 
-                List<String> hitCustomizedWords = new ArrayList<>();                                                 //构建一个集合装载自定义分词ID
+                List<String> hitCustomizedWords = new ArrayList<>();                                                    //构建一个集合装载自定义分词ID
                 for (int i = 0; i < terms.size(); i ++) {
                     Term term = terms.get(i);
                     String word = term.getWord();
@@ -145,20 +145,20 @@ public class CustomizedSemanticFacadeImp implements CustomizedSemanticFacade {
                     natures.set(i, partOfSpeech);                                                                       //设置第i个词性
 
                     CustomizedWord customizedWord = customizedWordMap.get(word);                                        //判断这个词是不是自定义分词，它存在于用户自定义分词中，就说明它是
-                    if(customizedWord != null){                                                                        //如果此句子分词集合真的含有自定义分词，则将此词语Id保存到list中，查出其约束（自定义分词实体）
+                    if(customizedWord != null){                                                                         //如果此句子分词集合真的含有自定义分词，则将此词语Id保存到list中，查出其约束（自定义分词实体）
                         hitCustomizedWords.add(customizedWord.getWord());
                     }
                 }
 
                 //4.如果有自定义分词，则将收集到的自定义分词的约束收集起来
                 if(hitCustomizedWords.size() > 0){
-                    List<String> neededHitCustomizedWord = new ArrayList<>();                                       //待收集词语ID列表
+                    List<String> neededHitCustomizedWord = new ArrayList<>();                                           //待收集词语ID列表
                     List<WordRestrictionParam> neededHitWordRestrictionParams = new ArrayList<>();                      //待收集约束的总列表
                     for (String hitCustomizedWord : hitCustomizedWords) {
                         List<WordRestrictionParam> wordRestrictionParams = globalWordRestrictionParamMap.get(neededHitCustomizedWord);
-                        if(wordRestrictionParams == null || wordRestrictionParams.size() == 0){                        //从全局Map里面没有查出来，就从db里面查
+                        if(wordRestrictionParams == null || wordRestrictionParams.size() == 0){                         //从全局Map里面没有查出来，就从db里面查
                             neededHitCustomizedWord.add(hitCustomizedWord);
-                        }else{                                                                                         //如果查出来了，就放到总列表neededHitWordRestrictionParams里面
+                        }else{                                                                                          //如果查出来了，就放到总列表neededHitWordRestrictionParams里面
                             neededHitWordRestrictionParams.addAll(wordRestrictionParams);
                         }
                     }
