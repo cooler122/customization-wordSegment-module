@@ -18,5 +18,5 @@ public interface WordRestrictionMapper {
 
     int updateByPrimaryKey(WordRestriction record);
 
-    List<WordRestriction> selectByWordIds(@Param("wordIds") List<Integer> hitCustomizedWordIds, @Param("accountId") Integer accountId);
+    List<WordRestriction> selectByWords(@Param("words") List<String> hitCustomizedWords, @Param("accountId") Integer accountId);
 }

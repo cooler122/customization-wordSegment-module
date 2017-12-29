@@ -1,11 +1,9 @@
 package com.cooler.semantic.facade.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.cooler.semantic.entity.CustomizedWord;
-import com.cooler.semantic.entity.WordRestriction;
 import com.cooler.semantic.facade.CustomizedSemanticFacade;
 import com.cooler.semantic.model.SemanticInfo;
-import com.cooler.semantic.model.SentenceVector;
+import com.cooler.semantic.model.SentenceVectorParam;
 import com.cooler.semantic.model.Term;
 import com.cooler.semantic.model.WordRestrictionParam;
 import com.cooler.semantic.service.external.BasisSemanticService;
@@ -42,7 +40,7 @@ public class CustomizedSemanticFacadeImp implements CustomizedSemanticFacade {
 
     private static Map<Integer, Map<String, CustomizedWord>> globalCustomizedWordMap = new HashMap<>();         //TODO:(以后要用redis代替）存放用各个用户自定义的词语Map<accountId, Map<word, customizedWord>>
 
-    private static Map<Integer, List<WordRestrictionParam>> globalWordRestrictionParamMap = new HashMap<>();    //TODO:(以后要用redis代替）存放用各个用户自定义的词语Map<wordId, List<WordRestrictionParam>>
+    private static Map<String, List<WordRestrictionParam>> globalWordRestrictionParamMap = new HashMap<>();    //TODO:(以后要用redis代替）存放用各个用户自定义的词语Map<word, List<WordRestrictionParam>>
 
     @Override
     public SemanticInfo semanticParse(String text, List<Pattern> patterns) {
@@ -64,7 +62,50 @@ public class CustomizedSemanticFacadeImp implements CustomizedSemanticFacade {
     }
 
     @Override
-    public List<SentenceVector> semanticParse(String sentence, Integer accountId, List<Integer> domainIds, List<Integer> selectorIds, boolean isDropPunctuation) {
+    public List<SentenceVectorParam> semanticParse(String sentence, Integer accountId, List<Integer> selectorIds, boolean isDropPunctuation) {
+        List<Pattern> patterns = new ArrayList<>();
+        patterns.add(Pattern.ALL);
+
+        //1.普通系统分词Channel.SYS模式，得到各个词段
+        SemanticInfo semantic_sys = basisSemanticService.parseSemantic(sentence, patterns, Channel.SYS, null);    //开始分词，使用用户渠道（默认使用hanlp）
+        SentenceVectorParam sentenceVectorParam_sys = buildSentenceVectorParam(sentence, semantic_sys, isDropPunctuation);
+        //2.用户自定义分词Channel.CUSTOM模式，得到各个词段
+        SemanticInfo semantic_custom = basisSemanticService.parseSemantic(sentence, patterns, Channel.CUSTOM, accountId + "");    //开始分词，使用用户渠道（默认使用hanlp）
+        SentenceVectorParam sentenceVectorParam_custom = buildSentenceVectorParam(sentence, semantic_custom, isDropPunctuation);
+        //TODO:根据selectorIds来选择不同的分词器进行分词，当前此模块里面的分词器准备的不多，默认使用了hanlp的，以后还可以进一步丰富这一块
+
+        List<SentenceVectorParam> sentenceVectorParams = new ArrayList<>();
+        sentenceVectorParams.add(sentenceVectorParam_sys);
+        if(!sentenceVectorParam_sys.equals(sentenceVectorParam_custom)){                                                //去重
+            sentenceVectorParams.add(sentenceVectorParam_custom);
+        }
+        return sentenceVectorParams;
+    }
+
+    private SentenceVectorParam buildSentenceVectorParam(String sentence, SemanticInfo semanticInfo, boolean isDropPunctuation){
+        List<Term> terms = semanticInfo.getTermList();                                                                  //分词结果中取出分词段
+
+        SentenceVectorParam sentenceVectorParam = new SentenceVectorParam();                                            //构建句子向量
+        sentenceVectorParam.setSentence(sentence);
+        List<String> words = sentenceVectorParam.getWords();
+        List<String> natures = sentenceVectorParam.getNatures();
+        List<Double> weights = sentenceVectorParam.getWeights();
+        for (int i = 0; i < terms.size(); i ++) {
+            Term term = terms.get(i);
+            String word = term.getWord();
+            Double weight = term.getWeight();
+            String partOfSpeech = term.getPartOfSpeech();
+            if(isDropPunctuation && partOfSpeech.equals("w")) continue;                                               //如果需要丢弃标点，那么这个标点分段就不加入到句子向量中
+            words.add(word);                                                                                            //添加word字符串
+            natures.add(partOfSpeech);                                                                                  //添加词性
+            weights.add(weight);                                                                                        //添加词的权重
+        }
+        return sentenceVectorParam;
+    }
+
+
+    @Override
+    public List<SentenceVectorParam> semanticParse(String sentence, Integer accountId, List<Integer> domainIds, List<Integer> selectorIds, boolean isDropPunctuation) {
         List<Pattern> patterns = new ArrayList<>();
         patterns.add(Pattern.ALL);
         try {
@@ -90,12 +131,12 @@ public class CustomizedSemanticFacadeImp implements CustomizedSemanticFacade {
                 }
 
                 //3.构建用来返回出去的句子向量，并向里面填充各个值；同时如果有自定义分词，则收集各个自定义分词的ID
-                SentenceVector sentenceVector = new SentenceVector();                                                   //构建句子向量
-                sentenceVector.setSentence(sentence);
-                List<String> words = sentenceVector.getWords();
-                List<String> natures = sentenceVector.getNatures();
+                SentenceVectorParam sentenceVectorParam = new SentenceVectorParam();                                                   //构建句子向量
+                sentenceVectorParam.setSentence(sentence);
+                List<String> words = sentenceVectorParam.getWords();
+                List<String> natures = sentenceVectorParam.getNatures();
 
-                List<Integer> hitCustomizedWordIds = new ArrayList<>();                                                 //构建一个集合装载自定义分词ID
+                List<String> hitCustomizedWords = new ArrayList<>();                                                 //构建一个集合装载自定义分词ID
                 for (int i = 0; i < terms.size(); i ++) {
                     Term term = terms.get(i);
                     String word = term.getWord();
@@ -105,43 +146,43 @@ public class CustomizedSemanticFacadeImp implements CustomizedSemanticFacade {
 
                     CustomizedWord customizedWord = customizedWordMap.get(word);                                        //判断这个词是不是自定义分词，它存在于用户自定义分词中，就说明它是
                     if(customizedWord != null){                                                                        //如果此句子分词集合真的含有自定义分词，则将此词语Id保存到list中，查出其约束（自定义分词实体）
-                        hitCustomizedWordIds.add(customizedWord.getId());
+                        hitCustomizedWords.add(customizedWord.getWord());
                     }
                 }
 
                 //4.如果有自定义分词，则将收集到的自定义分词的约束收集起来
-                if(hitCustomizedWordIds.size() > 0){
-                    List<Integer> neededHitCustomizedWordIds = new ArrayList<>();                                       //待收集词语ID列表
+                if(hitCustomizedWords.size() > 0){
+                    List<String> neededHitCustomizedWord = new ArrayList<>();                                       //待收集词语ID列表
                     List<WordRestrictionParam> neededHitWordRestrictionParams = new ArrayList<>();                      //待收集约束的总列表
-                    for (Integer hitCustomizedWordId : hitCustomizedWordIds) {
-                        List<WordRestrictionParam> wordRestrictionParams = globalWordRestrictionParamMap.get(hitCustomizedWordId);
+                    for (String hitCustomizedWord : hitCustomizedWords) {
+                        List<WordRestrictionParam> wordRestrictionParams = globalWordRestrictionParamMap.get(neededHitCustomizedWord);
                         if(wordRestrictionParams == null || wordRestrictionParams.size() == 0){                        //从全局Map里面没有查出来，就从db里面查
-                            neededHitCustomizedWordIds.add(hitCustomizedWordId);
+                            neededHitCustomizedWord.add(hitCustomizedWord);
                         }else{                                                                                         //如果查出来了，就放到总列表neededHitWordRestrictionParams里面
                             neededHitWordRestrictionParams.addAll(wordRestrictionParams);
                         }
                     }
 
-                    List<WordRestrictionParam> hitWordRestrictionParams = wordRestrictionService.selectByWordIds(neededHitCustomizedWordIds, accountId);    //没查出来的，在DB里面查
+                    List<WordRestrictionParam> hitWordRestrictionParams = wordRestrictionService.selectByWords(neededHitCustomizedWord, accountId);    //没查出来的，在DB里面查
                     neededHitWordRestrictionParams.addAll(hitWordRestrictionParams);                                    //把剩下的放到总列表里面
 
-                    Map<Integer, List<WordRestrictionParam>> wordRestrictionParamMap = new HashMap<>();
+                    Map<String, List<WordRestrictionParam>> wordRestrictionParamMap = new HashMap<>();
                     for (WordRestrictionParam hitWordRestrictionParam : neededHitWordRestrictionParams) {               //遍历总列表，将约束按照规定格式Map<hitWordId, List<WordRestrictionParam>>存放
-                        Integer hitWordId = hitWordRestrictionParam.getWordId();
-                        List<WordRestrictionParam> wordRestrictionParams = wordRestrictionParamMap.get(hitWordId);
+                        String hitWord = hitWordRestrictionParam.getWord();
+                        List<WordRestrictionParam> wordRestrictionParams = wordRestrictionParamMap.get(hitWord);
                         if(wordRestrictionParams == null){
                             wordRestrictionParams = new ArrayList<>();
                         }
                         wordRestrictionParams.add(hitWordRestrictionParam);
-                        wordRestrictionParamMap.put(hitWordId, wordRestrictionParams);
+                        wordRestrictionParamMap.put(hitWord, wordRestrictionParams);
                     }
                     globalWordRestrictionParamMap.putAll(wordRestrictionParamMap);                                      //将新查出的约束放到全局Map，以方便下次直接使用
-                    sentenceVector.setWordRestrictionParamMap(wordRestrictionParamMap);
+                    sentenceVectorParam.setWordRestrictionParamMap(wordRestrictionParamMap);
                 }
                 long t2 = System.currentTimeMillis();
                 logger.info(String.format("[%d ms]请求text：%s | patterns：%s | channel：%d | dictname：%s | data：%s", t2 - t1, sentence, this.patterns2Str(patterns), Channel.SYS.getIndex(), accountId, printSemantic(semantic)));
 
-                return Arrays.asList(sentenceVector);
+                return Arrays.asList(sentenceVectorParam);
             }
             return null;
         } catch (Exception e) {

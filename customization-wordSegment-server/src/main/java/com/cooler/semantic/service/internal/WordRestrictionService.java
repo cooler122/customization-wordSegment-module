@@ -18,5 +18,5 @@ public interface WordRestrictionService {
 
     int updateByPrimaryKey(WordRestriction record);
 
-    List<WordRestrictionParam> selectByWordIds(List<Integer> hitCustomizedWordIds, Integer accountId);
+    List<WordRestrictionParam> selectByWords(List<String> hitCustomizedWords, Integer accountId);
 }

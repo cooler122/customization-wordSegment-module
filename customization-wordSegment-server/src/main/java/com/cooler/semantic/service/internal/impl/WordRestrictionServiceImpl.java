@@ -47,8 +47,8 @@ public class WordRestrictionServiceImpl implements WordRestrictionService {
     }
 
     @Override
-    public List<WordRestrictionParam> selectByWordIds(List<Integer> hitCustomizedWordIds, Integer accountId) {
-        List<WordRestriction> wordRestrictions = wordRestrictionMapper.selectByWordIds(hitCustomizedWordIds, accountId);
+    public List<WordRestrictionParam> selectByWords(List<String> hitCustomizedWords, Integer accountId) {
+        List<WordRestriction> wordRestrictions = wordRestrictionMapper.selectByWords(hitCustomizedWords, accountId);
         List<WordRestrictionParam> wordRestrictionParams = new ArrayList<>();
         for (WordRestriction wordRestriction : wordRestrictions) {
             wordRestrictionParams.add(convert(wordRestriction));

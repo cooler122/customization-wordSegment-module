@@ -5,6 +5,7 @@ import com.cooler.semantic.facade.CustomizedSemanticFacade;
 import com.cooler.semantic.model.SemanticInfo;
 import com.cooler.semantic.enumeration.Channel;
 import com.cooler.semantic.enumeration.Pattern;
+import com.cooler.semantic.model.SentenceVectorParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -15,11 +16,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SemanticFacadeClient {
+public class CustomizedSemanticFacadeClient {
     private static ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath*:applicationContext-consumer.xml");
     private static CustomizedSemanticFacade customizedSemanticFacade = (CustomizedSemanticFacade)context.getBean("customizedSemanticFacade", CustomizedSemanticFacade.class);
-    private static Logger logger = LoggerFactory.getLogger(SemanticFacadeClient.class.getName());
-    private static String apiKey = "fff504e39436430da5ed50cf0da3ce45";
+    private static Logger logger = LoggerFactory.getLogger(CustomizedSemanticFacadeClient.class.getName());
+    private static String accountId = "1";
 
     public static void main(String[] args) throws IOException {
 
@@ -28,14 +29,19 @@ public class SemanticFacadeClient {
         patternList.add(Pattern.ALL);
 
 //        解析基础语义信息1
-        SemanticInfo semanticInfo1 = customizedSemanticFacade.parseSemantic("今天北京天气怎么样？", patternList);
+        SemanticInfo semanticInfo1 = customizedSemanticFacade.semanticParse("今天北京天气怎么样？", patternList);
         System.out.println("解析基础语义信息1 --> " + JSON.toJSONString(semanticInfo1));
+
 //        解析基础语义信息2(自定义解析)
-        SemanticInfo semanticInfo2 = customizedSemanticFacade.parseSemantic("今天北京天气怎么样？", patternList, Channel.CUSTOM, apiKey);
+        SemanticInfo semanticInfo2 = customizedSemanticFacade.semanticParse("今天北京天气怎么样？", patternList, Channel.CUSTOM, accountId);
         System.out.println("解析基础语义信息2 --> " + JSON.toJSONString(semanticInfo2));
 
+//        解析基础语义信息3(系统和自定义解析)
+        List<SentenceVectorParam> sentenceVectorParams = customizedSemanticFacade.semanticParse("今天北京天气怎么样？", 1, null, true);
+        System.out.println("解析基础语义信息3 --> " + JSON.toJSONString(sentenceVectorParams));
+
 ////        抽取关键词
-        Map<String, Double> keyWordsMap = customizedSemanticFacade.extractKeyWords("北京有哪些景点不收门票？", Channel.CUSTOM, apiKey, 4);
+        Map<String, Double> keyWordsMap = customizedSemanticFacade.extractKeyWords("北京有哪些景点不收门票？", Channel.CUSTOM, accountId, 4);
         System.out.println("抽取关键词 --> " + JSON.toJSONString(keyWordsMap));
 //
 //        单个词的语义联想

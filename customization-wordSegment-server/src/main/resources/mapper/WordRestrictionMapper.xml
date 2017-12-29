@@ -193,9 +193,9 @@
     select
     <include refid="Base_Column_List" />
     from word_restriction
-    where state = 1 and account_id = #{accountId, jdbcType=INTEGER} id IN
-      <foreach collection="wordIds" item="wordId" open="(" separator="," close=")">
-        #{wordId,jdbcType=INTEGER}
+    where state = 1 and account_id = #{accountId, jdbcType=INTEGER} word IN
+      <foreach collection="words" item="word" open="(" separator="," close=")">
+        #{word,jdbcType=INTEGER}
       </foreach>
   </select>
 </mapper>
